@@ -5,52 +5,55 @@ import {
 } from '@nestjs/common';
 import { СreateUserDto } from './create-user.dto';
 import { UpdatePasswordDto } from './update-user.dto';
-import crypto from 'crypto';
+import { randomUUID } from 'crypto';
+import { usersDB } from 'src/db/db';
+import { UserEntity } from './userEntitie';
 
 @Injectable()
 export class UserService {
-  private users = [];
-  getAll() {
-    return this.users;
-  }
-  getUserById(id: string) {
-    return this.users.find((user) => user.id === id);
-  }
   createUser(userDto: СreateUserDto) {
     const newUser = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       ...userDto,
       version: 0,
       createdAt: new Date().getTime(),
-      updatedAt: new Date().getDate(),
+      updatedAt: new Date().getTime(),
     };
-    this.users.push(newUser);
-    return newUser;
+    usersDB.push(newUser);
+    return new UserEntity(newUser);
   }
-  deleteUser(id: string): boolean {
-    const index = this.users.findIndex((user) => user.id === id);
-    if (index !== -1) {
-      this.users.splice(index, 1);
-      return true;
-    }
-    throw new NotFoundException(`User with id ${id} doesn't exist`);
+  getAll() {
+    return usersDB;
   }
-  updateUser(id: string, userDto: UpdatePasswordDto) {
-    const index = this.users.findIndex((user) => user.id === id);
+  getUserById(id: string) {
+    const user = usersDB.find((user) => user.id === id);
+    if (!user) throw new NotFoundException(`User with id ${id} doesn't exist`);
+    return new UserEntity(user);
+  }
+
+  deleteUser(id: string) {
+    const index = usersDB.findIndex((user) => user.id === id);
     if (index === -1) {
       throw new NotFoundException(`User with id ${id} doesn't exist`);
     }
-    const oldUser = this.users[index];
+    usersDB.splice(index, 1);
+  }
+  updateUser(id: string, userDto: UpdatePasswordDto) {
+    const index = usersDB.findIndex((user) => user.id === id);
+    if (index === -1) {
+      throw new NotFoundException(`User with id ${id} doesn't exist`);
+    }
+    const oldUser = usersDB[index];
     const newUser = {
       ...oldUser,
       version: oldUser.version + 1,
-      updateAt: new Date().getTime(),
+      updatedAt: new Date().getTime(),
       password: userDto.newPassword,
     };
-    if (oldUser.password !== userDto.newPassword) {
+    if (oldUser.password !== userDto.oldPassword) {
       throw new ForbiddenException('Old password is wrong');
     }
-    this.users[index] = newUser;
-    return newUser;
+    usersDB[index] = newUser;
+    return new UserEntity(newUser);
   }
 }

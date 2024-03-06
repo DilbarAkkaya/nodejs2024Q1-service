@@ -7,12 +7,17 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { СreateUserDto } from './create-user.dto';
 import { UpdatePasswordDto } from './update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get()
@@ -28,8 +33,9 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   deleteUser(@Param('id') id: string) {
-    return this.userService.deleteUser(id);
+    this.userService.deleteUser(id);
   }
   @Put(':id')
   updateUser(
