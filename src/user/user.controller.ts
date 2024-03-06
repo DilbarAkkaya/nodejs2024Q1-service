@@ -12,12 +12,12 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
-import { СreateUserDto } from './create-user.dto';
+import { CreateUserDto } from './create-user.dto';
 import { UpdatePasswordDto } from './update-user.dto';
 import { UserService } from './user.service';
 
-@Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get()
@@ -28,8 +28,9 @@ export class UserController {
   getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.userService.getUserById(id);
   }
+
   @Post()
-  createUser(@Body() createUserDto: СreateUserDto) {
+  createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
   @Delete(':id')

@@ -1,4 +1,4 @@
-import { UserEntity } from 'src/user/userEntitie';
+import { UserEntity } from 'src/user/user.entity';
 
 export const usersDB: User[] = [];
 

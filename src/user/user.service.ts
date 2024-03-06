@@ -3,19 +3,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { СreateUserDto } from './create-user.dto';
+import { CreateUserDto } from './create-user.dto';
 import { UpdatePasswordDto } from './update-user.dto';
 import { randomUUID } from 'crypto';
 import { usersDB } from 'src/db/db';
-import { UserEntity } from './userEntitie';
+import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
-  createUser(userDto: СreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const newUser = {
       id: randomUUID(),
-      ...userDto,
-      version: 0,
+      ...createUserDto,
+      version: 1,
       createdAt: new Date().getTime(),
       updatedAt: new Date().getTime(),
     };
