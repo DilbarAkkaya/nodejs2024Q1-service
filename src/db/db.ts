@@ -1,6 +1,7 @@
 import { UserEntity } from 'src/user/user.entity';
 
 export const usersDB: User[] = [];
+export const artistsDB: Artist[] = [];
 
 export interface User extends UserEntity {
   id: string;
@@ -10,7 +11,13 @@ export interface User extends UserEntity {
   updatedAt: number;
   password: string;
 }
-export interface IDB {
+/* export interface IDB {
   users: User[];
-  albums: [];
+  artist: Artist[];
+} */
+
+export interface Artist {
+  id: string;
+  name: string;
+  grammy: boolean;
 }
