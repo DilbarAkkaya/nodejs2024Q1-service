@@ -11,7 +11,7 @@ import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
-  async createUser(createUserDto: CreateUserDto) {
+  createUser(createUserDto: CreateUserDto) {
     const newUser = {
       id: randomUUID(),
       ...createUserDto,
