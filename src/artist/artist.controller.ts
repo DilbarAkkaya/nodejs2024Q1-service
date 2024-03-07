@@ -28,16 +28,16 @@ export class ArtistController {
     return this.artistService.createArtist(createArtistDto);
   }
   @Get(':id')
-  getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
+  getArtistById(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.artistService.getArtistById(id);
   }
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {
+  deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
     this.artistService.deleteArtist(id);
   }
   @Put(':id')
-  updateUser(
+  updateArtist(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateArtistDto: CreateArtistDto,
   ) {

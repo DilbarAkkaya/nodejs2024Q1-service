@@ -23,7 +23,7 @@ export class ArtistService {
     return artist;
   }
   deleteArtist(id: string) {
-    const index = artistsDB.findIndex((user) => user.id === id);
+    const index = artistsDB.findIndex((artist) => artist.id === id);
     if (index === -1) {
       throw new NotFoundException(`Artist with id ${id} doesn't exist`);
     }
@@ -32,7 +32,7 @@ export class ArtistService {
   updateArtist(id: string, artistDto: CreateArtistDto) {
     const index = artistsDB.findIndex((artist) => artist.id === id);
     if (index === -1) {
-      throw new NotFoundException(`User with id ${id} doesn't exist`);
+      throw new NotFoundException(`Artist with id ${id} doesn't exist`);
     }
     const newArtist = {
       ...artistsDB[index],
