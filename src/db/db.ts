@@ -1,5 +1,6 @@
 import { UserEntity } from 'src/user/user.entity';
-import { Track } from '../track/trackEntity';
+import { Track } from '../track/track.entity';
+import { Artist } from '../artist/artist.entity';
 
 export const usersDB: User[] = [];
 export const artistsDB: Artist[] = [];
@@ -12,14 +13,4 @@ export interface User extends UserEntity {
   createdAt: number;
   updatedAt: number;
   password: string;
-}
-/* export interface IDB {
-  users: User[];
-  artist: Artist[];
-} */
-
-export interface Artist {
-  id: string;
-  name: string;
-  grammy: boolean;
 }
