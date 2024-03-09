@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { albumDB } from 'src/db/db';
+import { albumDB, favsDB, tracksDB } from 'src/db/db';
 import { CreateAlbumDto } from './create-album.dto';
 import { randomUUID } from 'crypto';
 
@@ -28,6 +28,14 @@ export class AlbumService {
       throw new NotFoundException(`Album with id ${id} doesn't exist`);
     }
     albumDB.splice(index, 1);
+    const indexId = favsDB.albums.findIndex((item) => item === id);
+    favsDB.albums.splice(indexId, 1);
+    tracksDB.map((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+      return track;
+    });
   }
   updateAlbum(id: string, albumDto: CreateAlbumDto) {
     const index = albumDB.findIndex((album) => album.id === id);

@@ -22,3 +22,9 @@ export interface User extends UserEntity {
   updatedAt: number;
   password: string;
 }
+
+export class FavsResponse {
+  artists: Artist[];
+  tracks: Track[];
+  albums: Album[];
+}

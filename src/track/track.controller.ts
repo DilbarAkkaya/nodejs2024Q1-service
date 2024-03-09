@@ -38,6 +38,6 @@ export class TrackController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateTrackDto: CreateTrackDto,
   ) {
-    return this.trackService.updateArtist(id, updateTrackDto);
+    return this.trackService.updateTrack(id, updateTrackDto);
   }
 }

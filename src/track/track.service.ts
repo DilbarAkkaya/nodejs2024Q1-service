@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { tracksDB } from 'src/db/db';
+import { favsDB, tracksDB } from 'src/db/db';
 import { CreateTrackDto } from './create-track.dto';
 import { randomUUID } from 'crypto';
 
@@ -12,8 +12,6 @@ export class TrackService {
     const newTrack = {
       id: randomUUID(),
       ...createTrackDto,
-      artistId: null,
-      albumId: null,
     };
     tracksDB.push(newTrack);
     return newTrack;
@@ -30,8 +28,10 @@ export class TrackService {
       throw new NotFoundException(`Track with id ${id} doesn't exist`);
     }
     tracksDB.splice(index, 1);
+    const indexId = favsDB.tracks.findIndex((item) => item === id);
+    favsDB.tracks.splice(indexId, 1);
   }
-  updateArtist(id: string, trackDto: CreateTrackDto) {
+  updateTrack(id: string, trackDto: CreateTrackDto) {
     const index = tracksDB.findIndex((track) => track.id === id);
     if (index === -1) {
       throw new NotFoundException(`Track with id ${id} doesn't exist`);
