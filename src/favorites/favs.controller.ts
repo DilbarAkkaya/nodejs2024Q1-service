@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 
@@ -15,7 +16,11 @@ export class FavsController {
   constructor(private readonly favService: FavsService) {}
   @Post('artist/:id')
   createFavArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.favService.createFavArtist(id);
+    try {
+      return this.favService.createFavArtist(id);
+    } catch (err) {
+      throw new UnprocessableEntityException(err);
+    }
   }
   @Delete('artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -24,7 +29,11 @@ export class FavsController {
   }
   @Post('album/:id')
   createFavAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.favService.createFavAlbum(id);
+    try {
+      return this.favService.createFavAlbum(id);
+    } catch (err) {
+      throw new UnprocessableEntityException(err);
+    }
   }
   @Delete('album/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -33,7 +42,11 @@ export class FavsController {
   }
   @Post('track/:id')
   createFavTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.favService.createFavTrack(id);
+    try {
+      return this.favService.createFavTrack(id);
+    } catch (err) {
+      throw new UnprocessableEntityException(err);
+    }
   }
   @Delete('track/:id')
   @HttpCode(HttpStatus.NO_CONTENT)

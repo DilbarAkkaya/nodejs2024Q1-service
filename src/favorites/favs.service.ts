@@ -1,9 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
 import { albumDB, artistsDB, favsDB, FavsResponse, tracksDB } from 'src/db/db';
 import { TrackService } from 'src/track/track.service';
-//import { Favs } from './favs.entity';
 
 @Injectable()
 export class FavsService {
@@ -15,7 +14,7 @@ export class FavsService {
   createFavArtist(id: string) {
     const favArtist = this.artistService.getArtistById(id);
     if (!favArtist) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      throw new Error(`Artist with id ${id} not found`);
     }
     const isFavArtist = favsDB.artists.includes(id);
     if (!isFavArtist) {
@@ -26,21 +25,18 @@ export class FavsService {
   deleteFavArtist(id: string) {
     const artist = artistsDB.find((artist) => artist.id === id);
     if (!artist) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      throw new Error(`Artist with id ${id} not found`);
     }
     const indexArtistId = favsDB.artists.findIndex(
       (item) => item === artist.id,
     );
-    if (indexArtistId === -1) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
-    }
     favsDB.artists.splice(indexArtistId, 1);
   }
   createFavAlbum(id: string) {
     const favAlbum = this.albumService.getAlbumById(id);
     console.log(favAlbum);
     if (!favAlbum) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      throw new Error(`Album with id ${id} not found`);
     }
     const isFavAlbum = favsDB.albums.includes(id);
     if (!isFavAlbum) {
@@ -51,18 +47,15 @@ export class FavsService {
   deleteFavAlbum(id: string) {
     const album = albumDB.find((album) => album.id === id);
     if (!album) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      throw new Error(`Album with id ${id} not found`);
     }
     const indexAlbumId = favsDB.albums.findIndex((item) => item === album.id);
-    if (indexAlbumId === -1) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
-    }
     favsDB.albums.splice(indexAlbumId, 1);
   }
   createFavTrack(id: string) {
     const favTrack = this.trackService.getTrackById(id);
     if (!favTrack) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      throw new Error(`Track with id ${id} not found`);
     }
     const isFavTrack = favsDB.tracks.includes(id);
     if (!isFavTrack) {
@@ -73,12 +66,9 @@ export class FavsService {
   deleteFavTrack(id: string) {
     const track = tracksDB.find((track) => track.id === id);
     if (!track) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      throw new Error(`Track with id ${id} not found`);
     }
     const indexTrackId = favsDB.tracks.findIndex((item) => item === track.id);
-    if (indexTrackId === -1) {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
-    }
     favsDB.tracks.splice(indexTrackId, 1);
   }
   async getAll(): Promise<FavsResponse> {
