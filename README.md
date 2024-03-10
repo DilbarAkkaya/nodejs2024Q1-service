@@ -8,7 +8,7 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/DilbarAkkaya/nodejs2024Q1-service.git
 ```
 
 ## Installing NPM modules
@@ -16,6 +16,10 @@ git clone {repository URL}
 ```
 npm install
 ```
+
+## Setting env
+
+Change file .env.app to .env
 
 ## Running application
 
