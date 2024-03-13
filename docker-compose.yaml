@@ -11,11 +11,13 @@ services:
       - postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+    networks:
+      - home_library_network
 
 volumes:
   postgres:
 
-   nestApp:
+  nestApp:
     build: .
     ports:
       - "4000:4000"
@@ -27,5 +29,5 @@ volumes:
       - home_library_network
 
 networks:
-  mynetwork:
+  home_library_network:
     driver: bridge
