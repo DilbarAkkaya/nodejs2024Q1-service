@@ -8,16 +8,14 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_logs:/var/log/postgresql
     ports:
       - '5432:5432'
     networks:
       - home_library_network
 
-volumes:
-  postgres:
-
-  nestApp:
+  nestapp:
     build: .
     ports:
       - "4000:4000"
@@ -25,9 +23,17 @@ volumes:
       DATABASE_URL: postgres://user:password@postgres:5432/db_home_library
     depends_on:
       - postgres
+    volumes:
+      - /app/src
     networks:
       - home_library_network
 
 networks:
   home_library_network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_logs:
+  nestapp:
+    driver: local
