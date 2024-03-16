@@ -5,22 +5,22 @@ services:
     image: postgres
     restart: always
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - postgres_logs:/var/log/postgresql
     ports:
-      - '5432:5432'
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     networks:
       - home_library_network
 
   nestapp:
     build: .
     ports:
-      - "4000:4000"
+      - ${PORT}:${PORT}
     environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/db_home_library
+      DATABASE_URL: ${DATABASE_URL}
     depends_on:
       - postgres
     volumes:
