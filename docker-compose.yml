@@ -1,39 +1,46 @@
-version: '3.8'
+version: '3.9'
+
 services:
-
-  postgres:
+  database:
     image: postgres
+    container_name: db
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile
     restart: always
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - postgres_logs:/var/log/postgresql
+    env_file:
+      - .env
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - data:/var/lib/postgresql/data
+      - logs:/var/lib/postgresql/logs
     networks:
-      - home_library_network
+      - home-network
 
-  nestapp:
-    build: .
+  app:
+    image: nestapp
+    container_name: app
+    build: ./
+    restart: always
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     ports:
       - ${PORT}:${PORT}
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    depends_on:
-      - postgres
     volumes:
-      - .:/nestapp/src
+      - .:/nestapp/src/
+    depends_on:
+      - database
     networks:
-      - home_library_network
-
-networks:
-  home_library_network:
-    driver: bridge
+      - home-network
 
 volumes:
-  postgres_data:
-  postgres_logs:
-  nestapp:
-    driver: local
+  logs:
+  data:
+
+networks:
+  home-network:
+    driver: bridge
