@@ -21,7 +21,7 @@ services:
   app:
     image: nestapp
     container_name: app
-    build: ./
+    build: .
     restart: always
     env_file:
       - .env
@@ -31,7 +31,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     volumes:
-      - .:/nestapp/src/
+      - .:/nestapp
     depends_on:
       - database
     networks:
