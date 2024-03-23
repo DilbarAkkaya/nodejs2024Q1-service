@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -28,13 +29,27 @@ export class ArtistController {
     return this.artistService.createArtist(createArtistDto);
   }
   @Get(':id')
-  getArtistById(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.artistService.getArtistById(id);
+  @HttpCode(200)
+  async getArtistById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const artist = await this.artistService.getArtistById(id);
+    if (!artist) {
+      throw new HttpException(
+        `Artist with id ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return artist;
   }
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.artistService.deleteArtist(id);
+  @HttpCode(204)
+  async deleteArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = await this.artistService.deleteArtist(id);
+    if (track !== undefined) {
+      throw new HttpException(
+        `Artist with id ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
   @Put(':id')
   updateArtist(

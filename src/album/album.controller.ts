@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -25,13 +26,27 @@ export class AlbumController {
     return this.albumService.createAlbum(createAlbumDto);
   }
   @Get(':id')
-  getAlbumById(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.albumService.getAlbumById(id);
+  @HttpCode(200)
+  async getAlbumById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const album = await this.albumService.getAlbumById(id);
+    if (!album) {
+      throw new HttpException(
+        `Album with ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return album;
   }
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.albumService.deleteAlbum(id);
+  @HttpCode(204)
+  async deleteAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+    const album = await this.albumService.deleteAlbum(id);
+    if (album !== undefined) {
+      throw new HttpException(
+        `Album with ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
   @Put(':id')
   updateAlbum(

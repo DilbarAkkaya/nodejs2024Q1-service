@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -21,17 +22,25 @@ export class TrackController {
     return this.trackService.getAll();
   }
   @Post()
-  createTrack(@Body() createArtistDto: CreateTrackDto) {
-    return this.trackService.createTrack(createArtistDto);
+  createTrack(@Body() createTrackDto: CreateTrackDto) {
+    return this.trackService.createTrack(createTrackDto);
   }
   @Get(':id')
-  getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.trackService.getTrackById(id);
+  @HttpCode(200)
+  async getTrackById(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = await this.trackService.getTrackById(id);
+    if (!track) {
+      throw new HttpException('Artist is not found', HttpStatus.NOT_FOUND);
+    }
+    return track;
   }
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.trackService.deleteTrack(id);
+  @HttpCode(204)
+  async deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    const track = await this.trackService.deleteTrack(id);
+    if (track !== undefined) {
+      throw new HttpException('Track is not found', HttpStatus.NOT_FOUND);
+    }
   }
   @Put(':id')
   updateTrack(

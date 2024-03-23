@@ -1,52 +1,40 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { albumDB, favsDB, tracksDB } from 'src/db/db';
 import { CreateAlbumDto } from './create-album.dto';
-import { randomUUID } from 'crypto';
+import { PrismaService } from 'src/prisma.service';
+import { Album } from '@prisma/client';
 
 @Injectable()
 export class AlbumService {
-  getAll() {
-    return albumDB;
+  constructor(private prisma: PrismaService) {}
+  async getAll() {
+    return await this.prisma.album.findMany();
   }
-  createAlbum(createAlbumDto: CreateAlbumDto) {
-    const newAlbum = {
-      id: randomUUID(),
-      ...createAlbumDto,
-    };
-    albumDB.push(newAlbum);
-    return newAlbum;
-  }
-  getAlbumById(id: string) {
-    const album = albumDB.find((album) => album.id === id);
-    if (!album)
-      throw new NotFoundException(`Album with id ${id} doesn't exist`);
+  async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
+    const album = await this.prisma.album.create({ data: createAlbumDto });
     return album;
   }
-  deleteAlbum(id: string) {
-    const index = albumDB.findIndex((album) => album.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Album with id ${id} doesn't exist`);
-    }
-    albumDB.splice(index, 1);
-    const indexId = favsDB.albums.findIndex((item) => item === id);
-    favsDB.albums.splice(indexId, 1);
-    tracksDB.map((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
-      return track;
-    });
+  async getAlbumById(id: string) {
+    const album = await this.prisma.album.findUnique({ where: { id } });
+    return album;
   }
-  updateAlbum(id: string, albumDto: CreateAlbumDto) {
-    const index = albumDB.findIndex((album) => album.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Album with id ${id} doesn't exist`);
+  async deleteAlbum(id: string) {
+    try {
+      await this.prisma.album.delete({ where: { id } });
+    } catch (err) {
+      throw new NotFoundException(`Album with id ${id} not found`);
     }
-    const newAlbum = {
-      ...albumDB[index],
-      ...albumDto,
-    };
-    albumDB[index] = newAlbum;
-    return newAlbum;
+  }
+  async updateAlbum(id: string, albumDto: CreateAlbumDto) {
+    try {
+      const updatedAlbum = await this.prisma.album.update({
+        where: { id },
+        data: {
+          ...albumDto,
+        },
+      });
+      return updatedAlbum;
+    } catch {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
   }
 }

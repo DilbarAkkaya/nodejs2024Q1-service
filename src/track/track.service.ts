@@ -1,46 +1,40 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { favsDB, tracksDB } from 'src/db/db';
 import { CreateTrackDto } from './create-track.dto';
-import { randomUUID } from 'crypto';
+import { Track } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class TrackService {
-  getAll() {
-    return tracksDB;
+  constructor(private prisma: PrismaService) {}
+  async getAll() {
+    return await this.prisma.track.findMany();
   }
-  createTrack(createTrackDto: CreateTrackDto) {
-    const newTrack = {
-      id: randomUUID(),
-      ...createTrackDto,
-    };
-    tracksDB.push(newTrack);
-    return newTrack;
-  }
-  getTrackById(id: string) {
-    const track = tracksDB.find((track) => track.id === id);
-    if (!track)
-      throw new NotFoundException(`Track with id ${id} doesn't exist`);
+  async createTrack(createTrackDto: CreateTrackDto): Promise<Track> {
+    const track = await this.prisma.track.create({ data: createTrackDto });
     return track;
   }
-  deleteTrack(id: string) {
-    const index = tracksDB.findIndex((track) => track.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Track with id ${id} doesn't exist`);
-    }
-    tracksDB.splice(index, 1);
-    const indexId = favsDB.tracks.findIndex((item) => item === id);
-    favsDB.tracks.splice(indexId, 1);
+  async getTrackById(id: string) {
+    const track = await this.prisma.track.findUnique({ where: { id } });
+    return track;
   }
-  updateTrack(id: string, trackDto: CreateTrackDto) {
-    const index = tracksDB.findIndex((track) => track.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Track with id ${id} doesn't exist`);
+  async deleteTrack(id: string) {
+    try {
+      await this.prisma.track.delete({ where: { id } });
+    } catch (err) {
+      throw new NotFoundException(`Track with id ${id} not found`);
     }
-    const newTrack = {
-      ...tracksDB[index],
-      ...trackDto,
-    };
-    tracksDB[index] = newTrack;
-    return newTrack;
+  }
+  async updateTrack(id: string, trackDto: CreateTrackDto) {
+    try {
+      const updatedTrack = await this.prisma.track.update({
+        where: { id },
+        data: {
+          ...trackDto,
+        },
+      });
+      return updatedTrack;
+    } catch {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import {
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,16 +9,19 @@ import {
   ParseUUIDPipe,
   Post,
   UnprocessableEntityException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
+import { StatusCodes } from 'http-status-codes';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('favs')
 export class FavsController {
   constructor(private readonly favService: FavsService) {}
   @Post('artist/:id')
-  createFavArtist(@Param('id', new ParseUUIDPipe()) id: string) {
+  async createFavArtist(@Param('id', new ParseUUIDPipe()) id: string) {
     try {
-      return this.favService.createFavArtist(id);
+      return await this.favService.createFavArtist(id);
     } catch (err) {
       throw new UnprocessableEntityException(err);
     }
@@ -28,9 +32,9 @@ export class FavsController {
     this.favService.deleteFavArtist(id);
   }
   @Post('album/:id')
-  createFavAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
+  async createFavAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
     try {
-      return this.favService.createFavAlbum(id);
+      return await this.favService.createFavAlbum(id);
     } catch (err) {
       throw new UnprocessableEntityException(err);
     }
@@ -41,17 +45,17 @@ export class FavsController {
     this.favService.deleteFavAlbum(id);
   }
   @Post('track/:id')
-  createFavTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+  async createFavTrack(@Param('id', new ParseUUIDPipe()) id: string) {
     try {
-      return this.favService.createFavTrack(id);
+      return await this.favService.createFavTrack(id);
     } catch (err) {
       throw new UnprocessableEntityException(err);
     }
   }
   @Delete('track/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteFavTrack(@Param('id', new ParseUUIDPipe()) id: string) {
-    this.favService.deleteFavTrack(id);
+  @HttpCode(StatusCodes.NO_CONTENT)
+  async deleteTrack(@Param('id', new ParseUUIDPipe()) id: string) {
+    await this.favService.deleteFavTrack(id);
   }
   @Get()
   getAll() {
