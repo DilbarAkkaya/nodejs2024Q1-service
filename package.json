@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "docker:scan": "docker scout cves dilbar2706/nestapp",
+    "docker:scan": "docker scout cves nestapp && docker scout cves postgres",
     "start:migrate:prod": "prisma migrate deploy && npm run start:prod"
   },
   "dependencies": {
