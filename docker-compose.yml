@@ -6,7 +6,7 @@ services:
     container_name: db
     build:
       context: .
-      dockerfile: ./db/Dockerfile
+      dockerfile: db.dockerfile
     restart: always
     env_file:
       - .env
@@ -31,7 +31,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     volumes:
-      - .:/nestapp
+       - ./src:/src
     depends_on:
       - database
     networks:
