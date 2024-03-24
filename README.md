@@ -97,6 +97,10 @@ docker compose up database (you don't have to run if you have started docker dat
 npx prisma migrate deploy
 ```
 
+```
+npm run start
+```
+
 ## Checking requests by Postman (optional)
 
 ## Testing
